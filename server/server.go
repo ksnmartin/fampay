@@ -6,9 +6,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
+	"time"
 
+	"github.com/go-co-op/gocron"
 	"github.com/gorilla/mux"
 	"github.com/ksnmartin/fampay/db"
 	"go.mongodb.org/mongo-driver/bson"
@@ -16,8 +17,9 @@ import (
 )
 
 type App struct {
-	DB     *mongo.Client
-	Server *http.Server
+	DB        *mongo.Client
+	Server    *http.Server
+	Scheduler *gocron.Scheduler
 }
 
 func (app *App) AddRoutes() {
@@ -81,9 +83,14 @@ func (app *App) SearchAPI(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) AddCronJob() {
-	if os.Getenv("CRON_INSTANCE") == "true" {
-		print("reached")
-	}
+	fmt.Println("set up")
+	app.Scheduler.Every(30).Second().Do(func() {
+		//cron.Job(app.DB)
+		fmt.Println("called at : ", time.Now())
+	})
+	app.Scheduler.StartAsync()
+	app.Scheduler.RunAll()
+
 }
 
 func CreateApp() *App {
@@ -95,8 +102,9 @@ func CreateApp() *App {
 		Addr: "localhost:8000",
 	}
 	app := App{
-		DB:     DB,
-		Server: srv,
+		DB:        DB,
+		Server:    srv,
+		Scheduler: gocron.NewScheduler(time.UTC),
 	}
 	app.AddRoutes()
 	app.AddCronJob()

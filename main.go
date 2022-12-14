@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -33,6 +34,9 @@ func main() {
 		// extra handling here
 		cancel()
 		app.DB.Disconnect(ctx)
+		fmt.Println("Database disconnected")
+		app.Scheduler.Stop()
+		fmt.Println("Cron Job scheduling has stopped")
 	}()
 
 	if err := app.Server.Shutdown(ctx); err != nil {

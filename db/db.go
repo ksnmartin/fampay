@@ -39,7 +39,7 @@ func GetData(dataBase *mongo.Client, limit int64) (*mongo.Cursor, error) {
 
 func InsertData(dataBase *mongo.Client, data []interface{}) (*mongo.InsertManyResult, error) {
 	collection := dataBase.Database("Youtube").Collection("searchResult")
-	result, err := collection.InsertMany(context.TODO(), data)
+	result, err := collection.InsertMany(context.TODO(), data, options.InsertMany().SetOrdered(false))
 	return result, err
 }
 
