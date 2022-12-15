@@ -80,6 +80,9 @@ export DEFAULT_RESULTS=25
 export MINING_INTERVAL_IN_MIN=10
 export PUBLISHED_AFTER=020-09-01T01:59:53Z
 export TOPIC=dogs`
+
+//if you want to add multiple keys just seperate them with a comma
+export API_KEY=AIzaSyCwCq28k0R_XEZIPtfoPPcD3XSVkZSymO,AIzaSyCwCq28k0R_XEZIPtfoPPcD3XSVkZSymO
 ```
 - when scaling out horizontally keep in mind to only run cron job on only one instance as multiple cron jobs mining data will result in API key being blocked
 
@@ -103,6 +106,9 @@ export DEFAULT_RESULTS=25
 export MINING_INTERVAL_IN_MIN=10
 export PUBLISHED_AFTER=020-09-01T01:59:53Z
 export TOPIC=dogs`
+
+//if you want to add multiple keys just seperate them with a comma
+export API_KEY=AIzaSyCwCq28k0R_XEZIPtfoPPcD3XSVkZSymO,AIzaSyCwCq28k0R_XEZIPtfoPPcD3XSVkZSymO
 ```
 - build using compiler and run
 ```
