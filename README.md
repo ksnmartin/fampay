@@ -31,6 +31,25 @@ To make an API to fetch latest videos sorted in reverse chronological order of t
 - Search API reference: [https://developers.google.com/youtube/v3/docs/search/list](https://developers.google.com/youtube/v3/docs/search/list)
     - To fetch the latest videos you need to specify these: type=video, order=date, publishedAfter=<SOME_DATE_TIME>
     - Without publishedAfter, it will give you cached results which will be too old
+    
+ # API
+ ```
+ GET /health
+ //should return {"status":"ok"} if server is operational
+ 
+GET /search
+// returns list of JSON object of truncated to a length of DEFAULT_RESULTS sorted in decreasing order by when they are published
+
+GET /search?limit=26
+// returns list of JSON object of truncated to a length of 26
+
+GET /search?q=asian%20dog&limit=26
+// returns list of JSON object of truncated after performing parital text search on both title and description truncated at a length of 26
+
+GET /search?q=asian%20dog
+// returns list of JSON object of truncated after performing parital text search on both title and description truncated at a length of DEFAULT_RESULTS
+ 
+ ```
 # DataBase Setup
 We use a MongoDB database and setup 2 indexes .
 - create a database name `Youtube` and a collection named `searchResult`
