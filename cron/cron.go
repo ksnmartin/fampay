@@ -16,9 +16,10 @@ import (
 func MiningCronJob(DB *mongo.Client) {
 	apiKeys := strings.Split(os.Getenv("API_KEY"), ",")
 	publishedAfter := os.Getenv("PUBLISHED_AFTER")
+	topic := os.Getenv("TOPIC")
 	for _, apiKey := range apiKeys {
 		//loop to use the next API key if previous key fails
-		response, err := http.Get("https://youtube.googleapis.com/youtube/v3/search?part=snippet&q=ninja&type=video&order=date&publishedAfter=" + publishedAfter + "&key=" + apiKey)
+		response, err := http.Get("https://youtube.googleapis.com/youtube/v3/search?part=snippet&q=" + topic + "&type=video&order=date&publishedAfter=" + publishedAfter + "&key=" + apiKey)
 		if err != nil || response.StatusCode >= http.StatusBadRequest {
 			continue
 		} else if response.StatusCode == http.StatusOK {
