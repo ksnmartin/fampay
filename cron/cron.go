@@ -5,31 +5,41 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/ksnmartin/fampay/db"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func Job(DB *mongo.Client) {
-	response, err := http.Get("https://youtube.googleapis.com/youtube/v3/search?part=snippet&q=dogs&key=AIzaSyAcfQ9EMnnKBf0zj9eFzLRUKvHTJE09hWM")
-	if err != nil {
-		return
+func MiningCronJob(DB *mongo.Client) {
+	apiKeys := strings.Split(os.Getenv("API_KEY"), ",")
+	publishedAfter := os.Getenv("PUBLISHED_AFTER")
+	for _, apiKey := range apiKeys {
+		//loop to use the next API key if previous key fails
+		response, err := http.Get("https://youtube.googleapis.com/youtube/v3/search?part=snippet&q=ninja&type=video&order=date&publishedAfter=" + publishedAfter + "&key=" + apiKey)
+		if err != nil || response.StatusCode >= http.StatusBadRequest {
+			continue
+		} else if response.StatusCode == http.StatusOK {
+			defer response.Body.Close()
+			body, _ := ioutil.ReadAll(response.Body)
+			var jsonDocument map[string]interface{}
+			_ = json.Unmarshal(body, &jsonDocument)
+			items := jsonDocument["items"].([]interface{})
+			var snippetList []interface{}
+			for _, obj := range items {
+				snippet := obj.(map[string]interface{})["snippet"]
+				snippetList = append(snippetList, snippet)
+			}
+			_, err = db.InsertData(DB, snippetList)
+			if err != nil {
+				fmt.Println(err.Error())
+			} else {
+				fmt.Println(time.Now(), ": data insert succesfull")
+			}
+			return
+		}
 	}
-	defer response.Body.Close()
-	body, _ := ioutil.ReadAll(response.Body)
-	var data map[string]interface{}
-	_ = json.Unmarshal(body, &data)
-	items := data["items"].([]interface{})
-	var snippetList []interface{}
-	for _, obj := range items {
-		snippet := obj.(map[string]interface{})["snippet"]
-		snippetList = append(snippetList, snippet)
-	}
-	_, err = db.InsertData(DB, snippetList)
-	if err != nil {
-		fmt.Println(err.Error())
-	} else {
-		fmt.Println(time.Now(), ": data insert succesfull")
-	}
+
 }

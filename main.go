@@ -10,11 +10,15 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/ksnmartin/fampay/server"
 )
 
 func main() {
-	//create app here
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 	app := server.CreateApp()
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
@@ -28,10 +32,8 @@ func main() {
 
 	<-done
 	log.Print("Server Stopped")
-
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer func() {
-		// extra handling here
 		cancel()
 		app.DB.Disconnect(ctx)
 		fmt.Println("Database disconnected")
