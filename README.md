@@ -50,6 +50,34 @@ GET /search?q=asian%20dog
 // returns list of JSON object of truncated after performing parital text search on both title and description truncated at a length of DEFAULT_RESULTS
  
  ```
+ # Database Model 
+ ```
+Schema = bson.M{
+    "bsonType":             "object",
+    "required":             []string{"title","description","publishedAt","channelTitle","thumbnails"},
+    "additionalProperties": false,
+    "properties": bson.M{
+        "_id": bson.M{
+            "bsonType": "objectId",
+        },
+        "title": bson.M{
+            "bsonType":    "string"
+        },
+        "description": bson.M{
+            "bsonType":    "string"
+        },
+        "publishedAt": bson.M{
+            "bsonType":    "string"
+        },
+        "channelTitle": bson.M{
+            "bsonType":    "string"
+        },
+        "thumbnails": bson.M{
+            "bsonType":    "object"
+        },
+    },
+}
+```
 # DataBase Setup
 We use a MongoDB database and setup 2 indexes .
 - create a database name `Youtube` and a collection named `searchResult`

@@ -13,6 +13,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+type YTobject struct {
+	Title        string
+	Description  string
+	PublishedAt  string
+	ChannelTitle string
+	Thumbnails   interface{}
+}
+
 func MiningCronJob(DB *mongo.Client) {
 	apiKeys := strings.Split(os.Getenv("API_KEY"), ",")
 	publishedAfter := os.Getenv("PUBLISHED_AFTER")
@@ -30,8 +38,14 @@ func MiningCronJob(DB *mongo.Client) {
 			items := jsonDocument["items"].([]interface{})
 			var snippetList []interface{}
 			for _, obj := range items {
-				snippet := obj.(map[string]interface{})["snippet"]
-				snippetList = append(snippetList, snippet)
+				snippet := obj.(map[string]interface{})["snippet"].(map[string]interface{})
+				snippetList = append(snippetList, YTobject{
+					Title:        snippet["title"].(string),
+					Description:  snippet["description"].(string),
+					PublishedAt:  snippet["publishedAt"].(string),
+					ChannelTitle: snippet["channelTitle"].(string),
+					Thumbnails:   snippet["thumbnails"],
+				})
 			}
 			_, err = db.InsertData(DB, snippetList)
 			if err != nil {

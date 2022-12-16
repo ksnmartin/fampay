@@ -36,7 +36,7 @@ func SearchData(dataBase *mongo.Client, query string, limit int) (*mongo.Cursor,
 	collection := dataBase.Database("Youtube").Collection("searchResult")
 	paginationFilter := bson.D{{"$limit", limit}}
 	sortFilter := bson.D{{"$sort", bson.D{{"publishedAt", -1}}}} //sorted in descending order
-	filter := bson.A{}                                           //query pipline array
+	filter := bson.A{}                                           //query pipline array with schema validtor
 	if query != "" {
 		partialTextSearchFilter := bson.D{
 			{"$search",
@@ -76,6 +76,15 @@ func SearchData(dataBase *mongo.Client, query string, limit int) (*mongo.Cursor,
 		filter = append(filter, sortFilter)
 	}
 	filter = append(filter, paginationFilter)
+	validator := bson.D{{"$project",
+		bson.D{
+			{"title", 1},
+			{"description", 1},
+			{"publishedAt", 1},
+			{"channelTitle", 1},
+			{"thumbnails", 1},
+		}}} //schema validator
+	filter = append(filter, validator)
 	result, err := collection.Aggregate(context.TODO(), filter)
 	return result, err
 }
