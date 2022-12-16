@@ -98,7 +98,7 @@ Youtube.searchResult.createIndex( { title: 1, description: 1, channelTitle: 1 },
 -  pull docker image 
 `docker pull karyamsettymartin/go-fampay:latest`
 
-- set environment variables . (if you dont want the cron job to run on current instance set `CRON_INSTANCE=false`else set `CRON_INSTANCE=true`)
+- set environment variables and rebuild image if needed in `.env` file . (if you dont want the cron job to run on current instance set `CRON_INSTANCE=false`else set `CRON_INSTANCE=true`)
 ```
 export API_KEY=AIzaSyCwCq28k0R_XEZIPtfoPPcD3XSVkZSymO0
 export PORT=8000
